@@ -5,8 +5,9 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 import os
+from pathlib import Path
 from app import app
-from flask import render_template, request, redirect, url_for, flash, session, abort
+from flask import render_template, request, redirect, send_from_directory, url_for, flash, session, abort
 from werkzeug.utils import secure_filename
 from .forms import UploadForm
 
@@ -40,6 +41,26 @@ def upload():
                 flash('File Saved', 'success')
                 return redirect(url_for('home'))
     return render_template('upload.html', form = forms)
+
+def get_uploaded_images():
+    rootdir = os.getcwd()
+    print (rootdir)
+    images = []
+    for subdir, dirs, files in os.walk(os.path.join(Path(__file__).parents[1], 'uploads')):
+        for file in files:
+            if '.gitkeep' not in file:
+                images.append(file)
+    return images
+
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/files')
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+    return render_template('files.html', files = get_uploaded_images())
 
 
 @app.route('/login', methods=['POST', 'GET'])
