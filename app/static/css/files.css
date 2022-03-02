@@ -1,0 +1,14 @@
+img {
+    height: 20pc;
+    width: 20pc;
+}
+
+#images ul {
+    list-style-type: none;
+    column-count: 3;
+    column-gap: 0pc;
+}
+
+#images li {
+    padding: 1pc;
+}
